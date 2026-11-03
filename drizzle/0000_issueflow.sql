@@ -1,0 +1,17 @@
+CREATE TABLE users (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, is_demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+--> statement-breakpoint
+CREATE TABLE projects (id TEXT PRIMARY KEY, name TEXT NOT NULL CHECK(length(name) BETWEEN 1 AND 100), description TEXT NOT NULL DEFAULT '', owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, color TEXT NOT NULL DEFAULT '#6366f1', created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+--> statement-breakpoint
+CREATE TABLE issues (id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE, title TEXT NOT NULL CHECK(length(title) BETWEEN 1 AND 200), description TEXT NOT NULL DEFAULT '', priority TEXT NOT NULL CHECK(priority IN ('LOW','MEDIUM','HIGH')), status TEXT NOT NULL CHECK(status IN ('TODO','IN_PROGRESS','DONE')), due_date TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+--> statement-breakpoint
+CREATE TABLE sessions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, csrf TEXT NOT NULL, expires INTEGER NOT NULL);
+--> statement-breakpoint
+CREATE TABLE local_sessions (sid TEXT PRIMARY KEY, data TEXT NOT NULL, expires INTEGER NOT NULL);
+--> statement-breakpoint
+CREATE INDEX projects_owner ON projects(owner_id);
+--> statement-breakpoint
+CREATE INDEX issues_project ON issues(project_id);
+--> statement-breakpoint
+CREATE INDEX issues_status_priority ON issues(status,priority);
+--> statement-breakpoint
+CREATE INDEX sessions_expiry ON sessions(expires);
